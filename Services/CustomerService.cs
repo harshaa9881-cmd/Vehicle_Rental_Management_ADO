@@ -28,4 +28,10 @@ public class CustomerService
 
         return _repository.AddAsync(customer);
     }
+
+    public Task<List<Customer>> GetAllAsync()
+    {
+        return _repository.GetAllAsync();
+    }
+
 }

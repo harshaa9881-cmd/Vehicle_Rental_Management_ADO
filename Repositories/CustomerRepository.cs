@@ -30,4 +30,36 @@ public class CustomerRepository
 
         return Convert.ToInt32(result);
     }
+    public async Task<List<Customer>> GetAllAsync()
+    {
+        const string sql = """
+        SELECT CustomerId, FullName, Email, PhoneNumber
+        FROM Customers
+        ORDER BY CustomerId;
+        """;
+
+        List<Customer> customers = new List<Customer>();
+
+        await using SqlConnection connection = DatabaseHelper.CreateConnection();
+        await using SqlCommand command = new SqlCommand(sql, connection);
+
+        await connection.OpenAsync();
+
+        await using SqlDataReader reader = await command.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            Customer customer = new Customer
+            {
+                CustomerId = reader.GetInt32(0),
+                FullName = reader.GetString(1),
+                Email = reader.GetString(2),
+                PhoneNumber = reader.GetString(3)
+            };
+
+            customers.Add(customer);
+        }
+
+        return customers;
+    }
 }
