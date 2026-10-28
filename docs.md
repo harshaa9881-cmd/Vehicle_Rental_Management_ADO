@@ -1,567 +1,516 @@
-# Vehicle Rental System — Commit-by-Commit Implementation Log
+# Vehicle Rental Management System — Development Documentation
 
-**Technology:** C# Console Application, .NET 10, ADO.NET, SQL Server Express (`.\SQLEXPRESS`)
+## 1. Project Overview
 
-**Models:** Customer, Vehicle, Rental, Payment
+This project is a **C# Console Application** developed using **ADO.NET and SQL Server** to manage vehicle rentals.
 
-**Services:** CustomerService, VehicleService, RentalService, PaymentService
+The application contains four main modules:
 
----
+- **Customer Management** — Add, retrieve, update, and delete customers.
+- **Vehicle Management** — Add, retrieve, update, and delete vehicles.
+- **Rental Management** — Manage rental records and vehicle returns.
+- **Payment Management** — Add, retrieve, update, and delete payment records.
 
-## Commit 1: Create the Console Project
+The project follows a layered structure:
 
-**Commit message:** `Create Vehicle Rental System console project`
+- **Models:** Represent the application's data.
+- **Repositories:** Handle SQL Server database operations.
+- **Services:** Contain validation and application logic.
+- **DatabaseHelper:** Creates database connections.
+- **Program.cs:** Provides the console menu and connects the application features.
 
-### Objective
-Create the initial .NET 10 console application and verify that the project builds successfully.
+## 2. Commit History Summary
 
-### Steps
-1. Create the console application.
-2. Navigate into the project directory.
-3. Verify the generated project structure.
-4. Build the project.
+The following table lists all 19 commits in chronological order.
 
-### Commands
+| Commit ID | Commit Message | Purpose |
+|---|---|---|
+| `6e4229b` | Create Vehicle Rental System console project | Created the initial console application. |
+| `e581ef4` | Add ADO.NET database connection helper | Added reusable SQL Server connection logic. |
+| `4b57980` | Add Vehicle Rental System database schema | Added the database schema. |
+| `4787705` | update:object files updated | Updated object/build-related files. |
+| `87983b2` | update:microsoftdatasqlclient vulnerabilities resolved and updated | Updated the SQL client dependency to address reported vulnerabilities. |
+| `144cfad` | feat:Implement customer insert and list operations | Added customer insertion and listing. |
+| `eaf674f` | feat:Add customer list retrieval | Added or refined customer list retrieval. |
+| `2309663` | feat:Add customer retrieval by ID | Added customer retrieval by ID. |
+| `ff7ef32` | feat:Add customer update feature | Added customer update functionality. |
+| `057752c` | feat:Add customer delete feature | Added customer deletion. |
+| `e18d39e` | feat:Add Vehicle add feature | Added vehicle insertion. |
+| `0cd0cb1` | feat:Add Vehicle display feature | Added vehicle list retrieval. |
+| `afdebcb` | feat:Add Vehicle display by id feature | Added vehicle retrieval by ID. |
+| `85a93de` | feat:Add Vehicle update feature | Added vehicle update functionality. |
+| `9f40049` | feat:Add Vehicle delete feature | Added vehicle deletion. |
+| `ab7b51f` | feat:Add rental features | Added rental-related functionality. |
+| `01a16ad` | feat:Add payment add , getall,getbyid feature | Added payment insertion and retrieval. |
+| `5decd25` | feat:Add payment UPDATE AND DELETE feature | Added payment update and deletion. |
+| `4530f9d` | PROGRAM.cs added | Added the console menu to access the features. |
+
+## 3. Detailed Commit Explanations
+
+### Commit 1: `6e4229b` — Create Vehicle Rental System console project
+
+This commit established the initial project structure.
+
+**Purpose:**
+- Created the C# console application.
+- Established the foundation for the application.
+- Provided the starting point for adding database connectivity, models, repositories, and services.
+
+This step was necessary before implementing the application's features.
+
+### Commit 2: `e581ef4` — Add ADO.NET database connection helper
+
+This commit added a reusable helper for creating SQL Server connections.
+
+**Purpose:**
+- Centralized database connection creation.
+- Avoided repeating connection setup code in every repository.
+- Made database access easier to maintain.
+
+Repositories can use the helper to create a connection before executing SQL commands.
+
+The connection string must point to the correct SQL Server instance and database.
+
+### Commit 3: `4b57980` — Add Vehicle Rental System database schema
+
+This commit added the database schema for the Vehicle Rental System.
+
+**Purpose:**
+- Defined the database structures required by the application.
+- Prepared the database for customer, vehicle, rental, and payment operations.
+- Established the database foundation for repository implementation.
+
+The repository SQL statements must match the actual table names, column names, data types, and constraints defined in the schema.
+
+### Commit 4: `4787705` — update:object files updated
+
+This commit records updates to object-related or build-related files.
+
+The commit message does not identify the exact files or changes. The actual changes can be inspected using:
+
 ```powershell
-dotnet new console -n VehicleRentalSystem -f net10.0
-cd VehicleRentalSystem
-dotnet build
-git init
-git status
-git add .
-git commit -m "Create Vehicle Rental System console project"
+git show --stat 4787705
+git show --name-status 4787705
 ```
 
-If the project is already inside an existing Git repository, do not run `git init` again.
+Generated build files are generally excluded from Git unless there is a specific reason to track them.
 
-### Files
-- `Program.cs`
-- `VehicleRentalSystem.csproj`
-- Generated project files
+### Commit 5: `87983b2` — update:microsoftdatasqlclient vulnerabilities resolved and updated
 
-### Expected result
-- The application targets .NET 10.
-- The project builds successfully.
-- The initial project is committed to Git.
+This commit updated the `Microsoft.Data.SqlClient` dependency used for SQL Server connectivity.
 
----
+**Purpose:**
+- Updated the SQL Server client library.
+- Addressed reported dependency vulnerability findings.
+- Maintained the database connectivity dependency.
 
-## Commit 2: Add ADO.NET Database Connectivity
+The package provides classes such as `SqlConnection`, `SqlCommand`, and `SqlDataReader`.
 
-**Commit message:** `Add ADO.NET database connection helper`
+After dependency updates, the project can be checked using:
 
-### Objective
-Install the SQL Server data provider and create a shared helper for database connections.
-
-### Steps
-1. Install `Microsoft.Data.SqlClient`.
-2. Create the `Helpers` folder.
-3. Add `DatabaseHelper.cs`.
-4. Configure the connection string for `VehicleRentalDB`.
-5. Create a method that returns a new `SqlConnection`.
-
-### Commands
 ```powershell
-dotnet add package Microsoft.Data.SqlClient
+dotnet restore
 dotnet build
+dotnet list package --vulnerable --include-transitive
 ```
 
-### Files
-- `VehicleRentalSystem.csproj`
-- `Helpers/DatabaseHelper.cs`
+A successful build confirms that the project compiles. The vulnerability command reports known advisories available to the current tooling; it does not guarantee that every possible security risk has been eliminated.
 
-### Expected result
-- The package installs successfully.
-- The connection helper compiles.
-- The application can create a connection object.
-- Actual database connectivity can be verified after creating the database.
+## 4. Customer Management Features
 
----
+### Commit 6: `144cfad` — feat:Implement customer insert and list operations
 
-## Commit 3: Create the SQL Server Database
+This commit introduced the initial customer insertion and listing operations.
 
-**Commit message:** `Add Vehicle Rental System database schema`
+**Customer insertion:**
+- Accepts customer details.
+- Sends the data to the database layer.
+- Inserts the customer record into SQL Server.
 
-### Objective
-Create the database and the four tables required by the application.
+**Customer listing:**
+- Retrieves customer records from SQL Server.
+- Maps database records to customer model objects.
+- Makes the records available for display.
 
-### Steps
-1. Create `VehicleRentalDB` in SQL Server.
-2. Create the `Customers` table.
-3. Create the `Vehicles` table.
-4. Create the `Rentals` table.
-5. Create the `Payments` table.
-6. Add primary keys, foreign keys, unique constraints, default values, and basic check constraints.
-7. Insert sample customers and vehicles.
-8. Verify the tables and sample records in SSMS.
+These operations provide the foundation for managing customer information.
 
-### Files
-- `Database/VehicleRentalDB.sql`
+### Commit 7: `eaf674f` — feat:Add customer list retrieval
 
-### Expected result
-- All four tables exist.
-- `Rentals` references `Customers` and `Vehicles`.
-- `Payments` references `Rentals` through `RentalId`.
-- Duplicate customer emails and vehicle registration numbers are rejected.
-- Invalid negative rates and invalid payment amounts are rejected by database constraints.
+This commit is also related to customer list retrieval.
 
----
+The previous commit already mentions listing, so the exact difference between these two commits cannot be determined from the commit messages alone. It may represent a follow-up implementation, correction, or refactoring.
 
-## Commit 4: Create the Four Model Classes
+To inspect the actual changes:
 
-**Commit message:** `Add customer vehicle rental and payment models`
-
-### Objective
-Create the four classes that represent the application's data.
-
-### Steps
-1. Create the `Models` folder.
-2. Add `Customer.cs` with customer details.
-3. Add `Vehicle.cs` with vehicle details and availability.
-4. Add `Rental.cs` with customer ID, vehicle ID, rental dates, total amount, and status.
-5. Add `Payment.cs` with rental ID, amount, payment date, payment method, and status.
-6. Build the project.
-
-### Files
-- `Models/Customer.cs`
-- `Models/Vehicle.cs`
-- `Models/Rental.cs`
-- `Models/Payment.cs`
-
-### Expected result
-- Exactly four domain model classes are present.
-- Model properties correspond to the database columns.
-- The project builds successfully.
-- SQL queries and business logic are not placed inside model classes.
-
----
-
-## Commit 5: Implement Customer Insert and List Operations
-
-**Commit message:** `Implement customer insert and list operations`
-
-### Objective
-Create the repository methods to insert and retrieve customers using ADO.NET.
-
-### Steps
-1. Create `CustomerRepository.cs` inside `Repositories`.
-2. Implement `AddAsync(Customer customer)`.
-3. Use a parameterized `INSERT` statement.
-4. Retrieve the generated `CustomerId` using `SCOPE_IDENTITY()`.
-5. Implement `GetAllAsync()`.
-6. Use `SqlDataReader` to map database rows to `Customer` objects.
-
-### Files
-- `Repositories/CustomerRepository.cs`
-
-### Expected result
-- A customer can be inserted into SQL Server.
-- The generated customer ID is returned.
-- Customer records can be listed.
-- User-provided values are passed through SQL parameters.
-
----
-
-## Commit 6: Implement Customer Service and CRUD Operations
-
-**Commit message:** `Add customer validation and management operations`
-
-### Objective
-Add basic customer validation and complete the required customer management operations.
-
-### Steps
-1. Create `CustomerService.cs`.
-2. Inject or assign a `CustomerRepository` instance.
-3. Validate that the customer's name, email, and phone number are not blank.
-4. Implement customer lookup by ID.
-5. Implement customer update.
-6. Implement customer deactivation by setting `IsActive` to `0`.
-7. Handle nonexistent customer IDs.
-
-### Files
-- `Services/CustomerService.cs`
-- `Repositories/CustomerRepository.cs`
-
-### Expected result
-- Customers can be added, listed, searched, updated, and deactivated.
-- Blank required fields are rejected.
-- Duplicate emails are handled with a user-friendly error message.
-- Existing rental history is preserved when a customer is deactivated.
-
----
-
-## Commit 7: Implement Vehicle Insert and List Operations
-
-**Commit message:** `Implement vehicle insert and list operations`
-
-### Objective
-Create repository operations for adding vehicles and retrieving vehicle records.
-
-### Steps
-1. Create `VehicleRepository.cs`.
-2. Implement vehicle insertion with SQL parameters.
-3. Return the generated `VehicleId`.
-4. Implement listing all vehicles.
-5. Implement listing available vehicles.
-6. Filter available vehicles using `IsActive = 1` and `IsAvailable = 1`.
-
-### Files
-- `Repositories/VehicleRepository.cs`
-
-### Expected result
-- Vehicles can be added and listed.
-- Available-vehicle results exclude inactive and unavailable vehicles.
-- Duplicate registration numbers are rejected.
-
----
-
-## Commit 8: Implement Vehicle Service and CRUD Operations
-
-**Commit message:** `Add vehicle validation and management operations`
-
-### Objective
-Add basic validation and complete vehicle management operations.
-
-### Steps
-1. Create `VehicleService.cs`.
-2. Validate required registration number, make, model, and vehicle type.
-3. Reject negative daily rental rates.
-4. Implement vehicle lookup by ID.
-5. Implement vehicle update.
-6. Implement vehicle deactivation.
-7. Ensure deactivated vehicles are not offered for new rentals.
-
-### Files
-- `Services/VehicleService.cs`
-- `Repositories/VehicleRepository.cs`
-
-### Expected result
-- Vehicles can be added, listed, searched, updated, and deactivated.
-- Negative daily rates are rejected.
-- Deactivated vehicles do not appear in the available-vehicle list.
-- Vehicle records are retained when rental history exists.
-
----
-
-## Commit 9: Implement Rental Booking with a Transaction
-
-**Commit message:** `Implement rental booking with transaction`
-
-### Objective
-Implement the database operation that creates a rental and marks its vehicle unavailable.
-
-### Steps
-1. Create `RentalRepository.cs`.
-2. Implement the rental insertion operation.
-3. Open one SQL connection and begin a transaction.
-4. Insert the rental record.
-5. Update the corresponding vehicle to `IsAvailable = 0`.
-6. Check whether the vehicle update affected a row.
-7. Commit only when both operations succeed.
-8. Roll back if either operation fails.
-
-### Files
-- `Repositories/RentalRepository.cs`
-
-### Expected result
-- A rental record is created for a successful booking.
-- The rented vehicle becomes unavailable.
-- An unavailable vehicle cannot be booked successfully.
-- If the vehicle update fails, the rental insert is rolled back.
-- The database does not retain a partially completed booking.
-
----
-
-## Commit 10: Implement Rental Service and Rental History
-
-**Commit message:** `Add rental validation and listing operations`
-
-### Objective
-Add the service-level checks and rental retrieval operations.
-
-### Steps
-1. Create `RentalService.cs`.
-2. Verify that the customer exists and is active.
-3. Verify that the vehicle exists, is active, and is available.
-4. Validate the expected return date.
-5. Calculate the rental amount using the vehicle's daily rate and the chosen billable-day rule.
-6. Implement listing all rentals.
-7. Implement rental lookup by ID.
-8. Implement rental history by customer ID.
-
-For the initial implementation, count both the pickup date and expected return date as billable days.
-
-### Files
-- `Services/RentalService.cs`
-- `Repositories/RentalRepository.cs`
-
-### Expected result
-- Invalid customer and vehicle IDs are rejected.
-- Inactive customers cannot create new rentals.
-- Unavailable vehicles cannot be rented.
-- Rental totals are calculated consistently.
-- Rental history can be retrieved for a selected customer.
-
----
-
-## Commit 11: Implement Rental Return
-
-**Commit message:** `Implement rental return and vehicle availability update`
-
-### Objective
-Allow an active rental to be returned and make the associated vehicle available again.
-
-### Steps
-1. Find the rental using its ID.
-2. Verify that the rental status is `Active`.
-3. Set `ActualReturnDate`.
-4. Change the rental status to `Returned`.
-5. Set the vehicle's `IsAvailable` value to `1`.
-6. Perform both database updates within one transaction.
-7. Roll back both updates if either operation fails.
-
-### Files
-- `Services/RentalService.cs`
-- `Repositories/RentalRepository.cs`
-
-### Expected result
-- An active rental can be returned.
-- The rental status and actual return date are updated.
-- The associated vehicle becomes available.
-- A rental cannot be returned twice.
-- Failed updates do not leave the rental and vehicle in inconsistent states.
-
----
-
-## Commit 12: Implement Payment Repository
-
-**Commit message:** `Implement payment recording and history`
-
-### Objective
-Add the database operations required to record payments and retrieve payment records.
-
-### Steps
-1. Create `PaymentRepository.cs`.
-2. Implement payment insertion with SQL parameters.
-3. Retrieve the generated `PaymentId`.
-4. Implement listing all payments.
-5. Implement payment lookup by ID.
-6. Implement listing payments by `RentalId`.
-7. Map the database rows to `Payment` objects.
-
-### Files
-- `Repositories/PaymentRepository.cs`
-
-### Expected result
-- A payment can be recorded for an existing rental.
-- The generated payment ID is returned.
-- Payment records can be listed and searched.
-- Payment history can be filtered by rental ID.
-- Invalid rental references and non-positive amounts are rejected by database constraints.
-
----
-
-## Commit 13: Implement Payment Service
-
-**Commit message:** `Add payment validation and service operations`
-
-### Objective
-Add basic validation and business operations for payments.
-
-### Steps
-1. Create `PaymentService.cs`.
-2. Connect it to `PaymentRepository`.
-3. Verify that `RentalId` is valid.
-4. Verify that the rental exists.
-5. Reject payment amounts that are zero or negative.
-6. Require a payment method.
-7. Record successful simulated payments using the `Successful` status.
-8. Implement service methods for listing payments and viewing payment history.
-
-### Files
-- `Services/PaymentService.cs`
-- `Repositories/PaymentRepository.cs`
-
-### Expected result
-- Valid payments can be recorded.
-- Invalid rental IDs are rejected.
-- Non-positive amounts and blank payment methods are rejected.
-- Payments can be viewed by rental.
-- No real payment gateway or card processing is performed.
-
----
-
-## Commit 14: Implement Reports
-
-**Commit message:** `Add vehicle rental reports`
-
-### Objective
-Provide basic reports using SQL queries.
-
-### Steps
-1. Add a query for available vehicles.
-2. Add a query showing rentals with customer and vehicle details.
-3. Add a query showing rental history for a customer.
-4. Add a query counting rentals per vehicle.
-5. Add a query listing payments for a rental.
-6. Map query results into suitable model objects or display them through the service layer.
-
-### Files
-- `Repositories/VehicleRepository.cs`
-- `Repositories/RentalRepository.cs`
-- `Repositories/PaymentRepository.cs`
-- Relevant service files, if required
-
-### Expected result
-- Available vehicles are displayed correctly.
-- Rental reports include customer and vehicle information.
-- Customer rental history is filtered correctly.
-- Vehicles with no rentals are still included in the vehicle rental-count report.
-- Payment reports show the correct rental and payment details.
-
----
-
-## Commit 15: Connect the Console Menus
-
-**Commit message:** `Connect console menus to vehicle rental services`
-
-### Objective
-Connect all implemented service methods to the console interface.
-
-### Steps
-1. Create one repository instance for each module.
-2. Create one service instance for each module using the corresponding repository.
-3. Add the main menu.
-4. Add customer management options.
-5. Add vehicle management options.
-6. Add rental management options.
-7. Add payment management options.
-8. Add reports.
-9. Handle invalid menu choices.
-10. Catch expected exceptions and display user-friendly messages.
-
-### Files
-- `Program.cs`
-
-### Expected result
-- The application displays the main menu.
-- Each menu calls the corresponding service.
-- Users can navigate back to the main menu.
-- Invalid menu choices do not terminate the application.
-- Choosing `0` exits cleanly.
-
----
-
-## Commit 16: Test and Finalize Version 1
-
-**Commit message:** `Test and document Vehicle Rental System version 1`
-
-### Objective
-Verify the main workflows and document the actual implementation status.
-
-### Steps
-1. Build the application.
-2. Run the console application.
-3. Test customer creation, listing, updating, and deactivation.
-4. Test vehicle creation, listing, updating, and deactivation.
-5. Test booking and vehicle availability changes.
-6. Test rental return and vehicle availability restoration.
-7. Test payment recording and payment history.
-8. Test reports.
-9. Test invalid inputs and failed database operations.
-10. Fix any verified bugs.
-11. Update this document with the actual commit hashes and test results.
-
-### Commands
 ```powershell
+git show --stat eaf674f
+git show eaf674f
+```
+
+### Commit 8: `2309663` — feat:Add customer retrieval by ID
+
+This commit added the ability to retrieve a specific customer using the customer ID.
+
+**Purpose:**
+- Accept a customer ID.
+- Search for the matching record.
+- Return the customer when found.
+- Allow the application to handle a customer that does not exist.
+
+This feature is useful when displaying customer details or loading a record before updating it.
+
+### Commit 9: `ff7ef32` — feat:Add customer update feature
+
+This commit added customer update functionality.
+
+**Purpose:**
+- Identify an existing customer using the customer ID.
+- Accept updated customer details.
+- Update the matching database record.
+- Report whether the operation succeeded.
+
+The update operation should use parameterized SQL and validate required fields.
+
+### Commit 10: `057752c` — feat:Add customer delete feature
+
+This commit added customer deletion.
+
+**Purpose:**
+- Accept a customer ID.
+- Delete the matching customer record.
+- Report whether the customer was deleted.
+
+If a customer is referenced by a rental record, a foreign-key constraint may prevent deletion. Retaining customer history may require deactivation or archival rather than permanent deletion.
+
+## 5. Vehicle Management Features
+
+### Commit 11: `e18d39e` — feat:Add Vehicle add feature
+
+This commit added vehicle insertion.
+
+The `Vehicle` model contains the following properties:
+
+- `VehicleId`
+- `RegistrationNumber`
+- `Make`
+- `Model`
+- `VehicleType`
+- `DailyRate`
+- `IsAvailable`
+- `IsActive`
+
+**Purpose:**
+- Accept vehicle details.
+- Store the registration number, make, model, and type.
+- Store the daily rental rate.
+- Track vehicle availability and active status.
+
+Registration numbers should be unique if required by the application's business rules. The database can enforce uniqueness to prevent duplicate registrations.
+
+### Commit 12: `0cd0cb1` — feat:Add Vehicle display feature
+
+This commit added vehicle list retrieval.
+
+**Purpose:**
+- Retrieve vehicle records from SQL Server.
+- Map database records to `Vehicle` objects.
+- Display vehicle information.
+
+The displayed information can include the registration number, make, model, vehicle type, daily rate, availability, and active status.
+
+### Commit 13: `afdebcb` — feat:Add Vehicle display by id feature
+
+This commit added vehicle retrieval by ID.
+
+**Purpose:**
+- Accept a vehicle ID.
+- Retrieve the matching vehicle.
+- Display the vehicle details.
+- Report when the vehicle cannot be found.
+
+This feature is useful for viewing an individual vehicle or loading its details before updating it.
+
+### Commit 14: `85a93de` — feat:Add Vehicle update feature
+
+This commit added vehicle update functionality.
+
+**Purpose:**
+- Identify a vehicle by ID.
+- Update vehicle details.
+- Save the changes to SQL Server.
+- Report whether the update succeeded.
+
+Updated fields may include the registration number, make, model, vehicle type, daily rate, and status.
+
+The application should validate required fields and the daily rate. Vehicle availability should not be changed without considering active rentals.
+
+### Commit 15: `9f40049` — feat:Add Vehicle delete feature
+
+This commit added vehicle deletion.
+
+**Purpose:**
+- Accept a vehicle ID.
+- Delete the matching vehicle record.
+- Report whether the operation succeeded.
+
+If rental records reference the vehicle, a foreign-key constraint may prevent deletion. Marking a vehicle inactive may be preferable when rental history must be retained.
+
+## 6. Rental Management Features
+
+### Commit 16: `ab7b51f` — feat:Add rental features
+
+This commit introduced rental-related functionality.
+
+The `Rental` model contains:
+
+- `RentalId`
+- `CustomerId`
+- `VehicleId`
+- `RentalDate`
+- `ExpectedReturnDate`
+- `ActualReturnDate`
+- `TotalAmount`
+- `Status`
+
+**Purpose:**
+- Associate a customer with a vehicle.
+- Record the rental date.
+- Record the expected return date.
+- Store the actual return date when available.
+- Store the total rental amount.
+- Track the rental status.
+
+These fields provide the foundation for recording rental transactions and managing vehicle returns.
+
+**Important business rules to verify:**
+- The customer and vehicle must exist.
+- The expected return date must be after the rental date.
+- The vehicle must be available before a rental is accepted.
+- The same vehicle should not have overlapping active rentals.
+- Returning a vehicle should update both the rental status and vehicle availability.
+- Rental history should be protected from unsafe deletion.
+
+The commit message alone does not establish whether every rule has been implemented.
+
+## 7. Payment Management Features
+
+### Commit 17: `01a16ad` — feat:Add payment add , getall,getbyid feature
+
+This commit added payment insertion and retrieval operations.
+
+The `Payment` model contains:
+
+- `PaymentId`
+- `RentalId`
+- `Amount`
+- `PaymentDate`
+- `PaymentMethod`
+- `Status`
+
+**Add payment:**
+- Accepts a rental ID.
+- Stores the payment amount.
+- Records the payment date and method.
+- Stores the payment status.
+- Inserts the payment into SQL Server.
+
+**Get all payments:**
+- Retrieves payment records from the database.
+- Makes the records available for display.
+
+**Get payment by ID:**
+- Searches for a payment using its payment ID.
+- Returns the matching payment when found.
+
+These operations provide the foundation for recording and reviewing rental payments.
+
+### Commit 18: `5decd25` — feat:Add payment UPDATE AND DELETE feature
+
+This commit added payment update and deletion operations.
+
+**Update payment:**
+- Identifies a payment by ID.
+- Accepts updated payment information.
+- Saves the changes to SQL Server.
+
+**Delete payment:**
+- Accepts a payment ID.
+- Deletes the matching record.
+- Reports whether the deletion succeeded.
+
+The application should validate payment amounts and required fields and ensure that the associated rental is valid.
+
+Payment records may be needed for financial history or auditing. In a production system, a status correction or reversal record may be safer than permanently deleting a payment.
+
+## 8. Console Application Integration
+
+### Commit 19: `4530f9d` — PROGRAM.cs added
+
+This is the latest commit in the supplied history. It added the console entry point and menu to access the application's features.
+
+The menu provides the following sections:
+
+1. **Manage Customers**
+   - Add customer
+   - View all customers
+   - View customer by ID
+   - Update customer
+   - Delete customer
+
+2. **Manage Vehicles**
+   - Add vehicle
+   - View all vehicles
+   - View vehicle by ID
+   - Update vehicle
+   - Delete vehicle
+
+3. **Manage Rentals**
+   - Add rental
+   - View all rentals
+   - View rental by ID
+   - Update rental
+   - Delete rental
+   - Return vehicle
+
+4. **Manage Payments**
+   - Add payment
+   - View all payments
+   - View payment by ID
+   - View payments by rental ID
+   - Update payment
+   - Delete payment
+
+5. **Exit**
+   - Exit the console application.
+
+### Application flow
+
+```text
+User
+ |
+ v
+Program.cs
+(Console Menu)
+ |
+ v
+Service Classes
+(Validation and Application Logic)
+ |
+ v
+Repository Classes
+(SQL Operations)
+ |
+ v
+DatabaseHelper
+(Connection Creation)
+ |
+ v
+SQL Server Database
+```
+
+**How the layers work together:**
+
+- The user selects an option from the console menu.
+- `Program.cs` calls the appropriate service method.
+- The service performs application-level validation.
+- The repository executes SQL commands.
+- `DatabaseHelper` creates the SQL Server connection.
+- The database returns the operation result.
+- The application displays the result to the user.
+
+The menu is a basic console interface. Before production use, invalid-input handling and the consistency of rental and vehicle availability updates should be verified.
+
+## 9. Inspecting Git Commits
+
+The following commands can be used to inspect the actual changes made in each commit.
+
+### Display the files changed by a commit
+
+```powershell
+git show --stat <commit-id>
+```
+
+### Display the full changes in a commit
+
+```powershell
+git show <commit-id>
+```
+
+### Display changed filenames and change types
+
+```powershell
+git show --name-status <commit-id>
+```
+
+### Compare a commit with its parent
+
+```powershell
+git diff <commit-id>^ <commit-id>
+```
+
+### Display commit history with file summaries
+
+```powershell
+git log --oneline --stat
+```
+
+### Inspect the latest Program.cs commit
+
+```powershell
+git show 4530f9d
+```
+
+These commands help verify which files changed and what each commit actually introduced.
+
+## 10. Building and Running the Project
+
+Run the following commands from the project directory:
+
+```powershell
+dotnet restore
 dotnet build
 dotnet run
-git status
 ```
 
-### Files
-- `docs.md`
-- Source files changed to fix verified bugs
+If the application cannot connect to SQL Server, verify the following:
 
-### Expected result
-- The application builds without errors.
-- All four modules work with SQL Server.
-- Failed booking and return operations do not leave inconsistent records.
-- The documentation matches the implementation that was actually tested.
+1. SQL Server Express is running.
+2. The connection string points to the correct SQL Server instance and database.
+3. The database schema has been created.
+4. Table and column names match the SQL statements in the repositories.
+5. The configured authentication method has permission to access the database.
 
----
+## 11. Project Verification Checklist
 
-# Manual Testing Checklist
+Before considering the project complete, verify the following:
 
-## Customer Management
-- [ ] Add a customer.
-- [ ] List customers.
-- [ ] Search for a customer by ID.
-- [ ] Update customer details.
-- [ ] Reject blank required fields.
-- [ ] Reject duplicate email addresses.
-- [ ] Deactivate a customer.
+- [ ] The connection string is correct.
+- [ ] Production secrets are not committed to Git.
+- [ ] SQL statements use parameters.
+- [ ] Required customer fields are validated.
+- [ ] Required vehicle fields and daily rates are validated.
+- [ ] Vehicle registration numbers are unique if required.
+- [ ] Rental creation checks whether the customer and vehicle exist.
+- [ ] Overlapping active rentals for the same vehicle are prevented.
+- [ ] Vehicle availability is updated when a rental starts and when it is returned.
+- [ ] Rental and payment statuses are validated consistently.
+- [ ] Foreign-key constraints and deletion behavior preserve required history.
+- [ ] Invalid console input is handled without unexpectedly terminating the application.
+- [ ] The application builds successfully.
+- [ ] Basic customer, vehicle, rental, and payment operations are tested against the intended database.
 
-## Vehicle Management
-- [ ] Add a vehicle.
-- [ ] List vehicles.
-- [ ] List available vehicles.
-- [ ] Search for a vehicle by ID.
-- [ ] Update vehicle details.
-- [ ] Reject duplicate registration numbers.
-- [ ] Reject a negative daily rate.
-- [ ] Deactivate a vehicle.
+These are verification items, not claims that the current implementation already satisfies every item.
 
-## Rental Management
-- [ ] Book an available vehicle.
-- [ ] Reject a nonexistent customer ID.
-- [ ] Reject a nonexistent vehicle ID.
-- [ ] Reject booking an unavailable vehicle.
-- [ ] Verify the rental amount.
-- [ ] Verify that a booked vehicle becomes unavailable.
-- [ ] Return an active rental.
-- [ ] Verify that the vehicle becomes available again.
-- [ ] Reject a second return for the same rental.
-- [ ] Verify transaction rollback after a failed booking or return operation.
+## 12. Conclusion
 
-## Payment Management
-- [ ] Record a payment for an existing rental.
-- [ ] Reject a payment for a nonexistent rental.
-- [ ] Reject zero or negative payment amounts.
-- [ ] Reject a blank payment method.
-- [ ] List all payments.
-- [ ] List payments by rental ID.
+The commit history shows the incremental development of the Vehicle Rental Management System.
 
-## Reports and Integration
-- [ ] View available vehicles.
-- [ ] View rentals with customer and vehicle details.
-- [ ] View rental history for a customer.
-- [ ] View rental counts per vehicle.
-- [ ] View payments for a rental.
-- [ ] Verify that invalid menu choices are handled correctly.
-- [ ] Verify that the application exits cleanly.
+The project began with console application setup and database connectivity. Customer and vehicle CRUD operations were added next, followed by rental and payment functionality. The latest commit introduced `Program.cs`, which provides a menu for accessing these operations.
+
+Using focused commits makes it easier to understand development progress, review changes, identify bugs, and maintain the application. For exact file-level details, especially where commit messages overlap, the actual changes should be inspected using `git show`.
 
 ---
 
-# Commit Record Template
-
-After completing each commit, replace the placeholders with the actual details.
-
-## Commit <number>: <feature name>
-
-- **Commit message:** `<exact Git commit message>`
-- **Commit hash:** `<actual short hash>`
-- **Files added or modified:**
-  - `<file path>`
-- **Implementation details:**
-  - `<describe the completed changes>`
-- **Commands executed:**
-  - `<commands used>`
-- **Tests performed:**
-  - `<test cases>`
-- **Expected result:** `<expected behavior>`
-- **Actual result:** `<observed behavior and pass/fail status>`
-- **Issues found:** `<issues or None>`
-- **Next step:** `<next implementation task>`
-
-> **Documentation rule:** Record actual commit hashes and test results only after the work is completed. A planned commit must not be marked as finished until the code has been built and the relevant behavior has been tested.
+**Project:** Vehicle Rental Management System  
+**Technology:** C#, .NET, ADO.NET, SQL Server, Git  
+**Latest commit shown:** `4530f9d` — `PROGRAM.cs added`
