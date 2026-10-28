@@ -69,4 +69,12 @@ public class VehicleService
         return _repository.UpdateAsync(vehicle);
     }
 
+    public Task<bool> DeleteAsync(int vehicleId)
+    {
+        if (vehicleId <= 0)
+            throw new ArgumentException("Vehicle ID must be greater than zero.");
+
+        return _repository.DeleteAsync(vehicleId);
+    }
+
 }

@@ -166,5 +166,24 @@ public class VehicleRepository
         return rowsAffected > 0;
     }
 
+    public async Task<bool> DeleteAsync(int vehicleId)
+    {
+        const string sql = """
+        DELETE FROM Vehicles
+        WHERE VehicleId = @VehicleId;
+        """;
+
+        await using SqlConnection connection = DatabaseHelper.CreateConnection();
+        await using SqlCommand command = new SqlCommand(sql, connection);
+
+        command.Parameters.Add("@VehicleId", SqlDbType.Int).Value = vehicleId;
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
+
 
 }
