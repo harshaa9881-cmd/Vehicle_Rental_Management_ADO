@@ -59,5 +59,13 @@ public class CustomerService
         return _repository.UpdateAsync(customer);
     }
 
+    public Task<bool> DeleteAsync(int customerId)
+    {
+        if (customerId <= 0)
+            throw new ArgumentException("Customer ID must be greater than zero.");
+
+        return _repository.DeleteAsync(customerId);
+    }
+
 
 }

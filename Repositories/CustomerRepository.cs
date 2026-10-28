@@ -125,4 +125,23 @@ public class CustomerRepository
         return rowsAffected > 0;
     }
 
+    public async Task<bool> DeleteAsync(int customerId)
+    {
+        const string sql = """
+        DELETE FROM Customers
+        WHERE CustomerId = @CustomerId;
+        """;
+
+        await using SqlConnection connection = DatabaseHelper.CreateConnection();
+        await using SqlCommand command = new SqlCommand(sql, connection);
+
+        command.Parameters.Add("@CustomerId", SqlDbType.Int).Value = customerId;
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
+
 }
