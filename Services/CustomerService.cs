@@ -42,5 +42,22 @@ public class CustomerService
         return _repository.GetByIdAsync(customerId);
     }
 
+    public Task<bool> UpdateAsync(Customer customer)
+    {
+        if (customer.CustomerId <= 0)
+            throw new ArgumentException("Customer ID must be greater than zero.");
+
+        if (string.IsNullOrWhiteSpace(customer.FullName))
+            throw new ArgumentException("Customer name is required.");
+
+        if (string.IsNullOrWhiteSpace(customer.Email))
+            throw new ArgumentException("Customer email is required.");
+
+        if (string.IsNullOrWhiteSpace(customer.PhoneNumber))
+            throw new ArgumentException("Customer phone number is required.");
+
+        return _repository.UpdateAsync(customer);
+    }
+
 
 }

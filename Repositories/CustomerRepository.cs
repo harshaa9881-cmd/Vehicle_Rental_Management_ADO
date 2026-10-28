@@ -96,4 +96,33 @@ public class CustomerRepository
         return null;
     }
 
+    public async Task<bool> UpdateAsync(Customer customer)
+    {
+        const string sql = """
+        UPDATE Customers
+        SET FullName = @FullName,
+            Email = @Email,
+            PhoneNumber = @PhoneNumber
+        WHERE CustomerId = @CustomerId;
+        """;
+
+        await using SqlConnection connection = DatabaseHelper.CreateConnection();
+        await using SqlCommand command = new SqlCommand(sql, connection);
+
+        command.Parameters.Add("@CustomerId", SqlDbType.Int).Value =
+            customer.CustomerId;
+        command.Parameters.Add("@FullName", SqlDbType.NVarChar, 100).Value =
+            customer.FullName;
+        command.Parameters.Add("@Email", SqlDbType.NVarChar, 255).Value =
+            customer.Email;
+        command.Parameters.Add("@PhoneNumber", SqlDbType.NVarChar, 20).Value =
+            customer.PhoneNumber;
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
+
 }
