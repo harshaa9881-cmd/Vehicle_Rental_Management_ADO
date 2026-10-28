@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Vehicle_rent_Management_ADO")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+577aeee431d7c52dd704526d2da7a66a44be0b25")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e4229b54e3abff8fa66a6a8006c87f3178cba68")]
 [assembly: System.Reflection.AssemblyProductAttribute("Vehicle_rent_Management_ADO")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Vehicle_rent_Management_ADO")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
