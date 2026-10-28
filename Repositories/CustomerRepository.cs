@@ -62,4 +62,38 @@ public class CustomerRepository
 
         return customers;
     }
+
+    public async Task<Customer?> GetByIdAsync(int customerId)
+    {
+        const string sql = """
+        SELECT CustomerId, FullName, Email, PhoneNumber
+        FROM Customers
+        WHERE CustomerId = @CustomerId;
+        """;
+
+        await using SqlConnection connection = DatabaseHelper.CreateConnection();
+        await using SqlCommand command = new SqlCommand(sql, connection);
+
+        command.Parameters.Add("@CustomerId", SqlDbType.Int).Value = customerId;
+
+        await connection.OpenAsync();
+
+        await using SqlDataReader reader = await command.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            Customer customer = new Customer
+            {
+                CustomerId = reader.GetInt32(0),
+                FullName = reader.GetString(1),
+                Email = reader.GetString(2),
+                PhoneNumber = reader.GetString(3)
+            };
+
+            return customer;
+        }
+
+        return null;
+    }
+
 }

@@ -34,4 +34,13 @@ public class CustomerService
         return _repository.GetAllAsync();
     }
 
+    public Task<Customer?> GetByIdAsync(int customerId)
+    {
+        if (customerId <= 0)
+            throw new ArgumentException("Customer ID must be greater than zero.");
+
+        return _repository.GetByIdAsync(customerId);
+    }
+
+
 }
