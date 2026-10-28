@@ -32,4 +32,10 @@ public class VehicleService
 
         return _repository.AddAsync(vehicle);
     }
+
+    public Task<List<Vehicle>> GetAllAsync()
+    {
+        return _repository.GetAllAsync();
+    }
+
 }
