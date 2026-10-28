@@ -66,4 +66,43 @@ public class PaymentService
 
         return await _repository.GetByRentalIdAsync(rentalId);
     }
+    public Task<bool> UpdateAsync(Payment payment)
+    {
+        if (payment.PaymentId <= 0)
+        {
+            throw new ArgumentException("Payment ID must be greater than zero.");
+        }
+
+        if (payment.RentalId <= 0)
+        {
+            throw new ArgumentException("Rental ID must be greater than zero.");
+        }
+
+        if (payment.Amount <= 0)
+        {
+            throw new ArgumentException("Payment amount must be greater than zero.");
+        }
+
+        if (string.IsNullOrWhiteSpace(payment.PaymentMethod))
+        {
+            throw new ArgumentException("Payment method is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(payment.Status))
+        {
+            throw new ArgumentException("Payment status is required.");
+        }
+
+        return _repository.UpdateAsync(payment);
+    }
+
+    public Task<bool> DeleteAsync(int paymentId)
+    {
+        if (paymentId <= 0)
+        {
+            throw new ArgumentException("Payment ID must be greater than zero.");
+        }
+
+        return _repository.DeleteAsync(paymentId);
+    }
 }

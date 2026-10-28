@@ -152,4 +152,64 @@ public class PaymentRepository
 
         return payments;
     }
+    public async Task<bool> UpdateAsync(Payment payment)
+    {
+        const string sql = """
+            UPDATE Payments
+            SET RentalId = @RentalId,
+                Amount = @Amount,
+                PaymentDate = @PaymentDate,
+                PaymentMethod = @PaymentMethod,
+                Status = @Status
+            WHERE PaymentId = @PaymentId;
+            """;
+
+        await using SqlConnection connection = DatabaseHelper.CreateConnection();
+        await using SqlCommand command = new SqlCommand(sql, connection);
+
+        command.Parameters.Add("@PaymentId", SqlDbType.Int).Value =
+            payment.PaymentId;
+
+        command.Parameters.Add("@RentalId", SqlDbType.Int).Value =
+            payment.RentalId;
+
+        command.Parameters.Add("@Amount", SqlDbType.Decimal).Value =
+            payment.Amount;
+        command.Parameters["@Amount"].Precision = 10;
+        command.Parameters["@Amount"].Scale = 2;
+
+        command.Parameters.Add("@PaymentDate", SqlDbType.DateTime).Value =
+            payment.PaymentDate;
+
+        command.Parameters.Add("@PaymentMethod", SqlDbType.NVarChar, 50).Value =
+            payment.PaymentMethod;
+
+        command.Parameters.Add("@Status", SqlDbType.NVarChar, 20).Value =
+            payment.Status;
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
+
+    public async Task<bool> DeleteAsync(int paymentId)
+    {
+        const string sql = """
+            DELETE FROM Payments
+            WHERE PaymentId = @PaymentId;
+            """;
+
+        await using SqlConnection connection = DatabaseHelper.CreateConnection();
+        await using SqlCommand command = new SqlCommand(sql, connection);
+
+        command.Parameters.Add("@PaymentId", SqlDbType.Int).Value = paymentId;
+
+        await connection.OpenAsync();
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0;
+    }
 }
