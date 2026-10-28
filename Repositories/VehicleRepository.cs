@@ -85,4 +85,43 @@ public class VehicleRepository
         return vehicles;
     }
 
+    public async Task<Vehicle?> GetByIdAsync(int vehicleId)
+    {
+        const string sql = """
+        SELECT VehicleId, RegistrationNumber, Make, Model,
+               VehicleType, DailyRate, IsAvailable, IsActive
+        FROM Vehicles
+        WHERE VehicleId = @VehicleId;
+        """;
+
+        await using SqlConnection connection = DatabaseHelper.CreateConnection();
+        await using SqlCommand command = new SqlCommand(sql, connection);
+
+        command.Parameters.Add("@VehicleId", SqlDbType.Int).Value = vehicleId;
+
+        await connection.OpenAsync();
+
+        await using SqlDataReader reader = await command.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            Vehicle vehicle = new Vehicle
+            {
+                VehicleId = reader.GetInt32(0),
+                RegistrationNumber = reader.GetString(1),
+                Make = reader.GetString(2),
+                Model = reader.GetString(3),
+                VehicleType = reader.GetString(4),
+                DailyRate = reader.GetDecimal(5),
+                IsAvailable = reader.GetBoolean(6),
+                IsActive = reader.GetBoolean(7)
+            };
+
+            return vehicle;
+        }
+
+        return null;
+    }
+
+
 }

@@ -38,4 +38,12 @@ public class VehicleService
         return _repository.GetAllAsync();
     }
 
+    public Task<Vehicle?> GetByIdAsync(int vehicleId)
+    {
+        if (vehicleId <= 0)
+            throw new ArgumentException("Vehicle ID must be greater than zero.");
+
+        return _repository.GetByIdAsync(vehicleId);
+    }
+
 }
